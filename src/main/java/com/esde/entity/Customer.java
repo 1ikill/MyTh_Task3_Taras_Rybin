@@ -4,10 +4,9 @@ import com.esde.manager.CashierManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
-public class Customer implements Callable<Void> {
+public class Customer implements Runnable {
     private static final Logger logger = LogManager.getLogger();
 
     private final int id;
@@ -27,7 +26,7 @@ public class Customer implements Callable<Void> {
     }
 
     @Override
-    public Void call() {
+    public void run() {
         while (true) {
             Cashier cashier = CashierManager.getInstance(0).getAvailableCashier();
             if (cashier != null) {
@@ -39,9 +38,9 @@ public class Customer implements Callable<Void> {
                     TimeUnit.SECONDS.sleep(1);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
+                    logger.error("Error while serving", e);
                 }
             }
         }
-        return null;
     }
 }
